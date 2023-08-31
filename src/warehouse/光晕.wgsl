@@ -8,6 +8,7 @@ fn main(
     var pos = 0.5 - fragUv;
     var dist = 1.0 / length(pos);
     dist *= 0.1;
+    dist *= iTime / 10.0;
     dist = pow(dist, 0.8);
     var col = dist * vec3(1.0, 0.5, 0.25);
     return vec4<f32>(col, 1.0);

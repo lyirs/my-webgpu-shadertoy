@@ -25,10 +25,12 @@ const squareVertices = new Float32Array([
 
 let pipeline: GPURenderPipeline;
 
-const updatePipeline = (fragWGSL: string) => {
+const updatePipeline = (fragWGSL: string, bindGroup: GPUBindGroupLayout) => {
   pipeline = device.createRenderPipeline({
     // 布局
-    layout: "auto",
+    layout: device.createPipelineLayout({
+      bindGroupLayouts: [bindGroup],
+    }),
     // 顶点着色器
     vertex: {
       module: device.createShaderModule({
@@ -75,8 +77,6 @@ const updatePipeline = (fragWGSL: string) => {
   });
 };
 
-updatePipeline(fragWGSL);
-
 const squareBuffer = CreateGPUBuffer(
   device,
   squareVertices,
@@ -110,13 +110,15 @@ const bindGroup = device.createBindGroup({
   ],
 });
 
+updatePipeline(fragWGSL, bindGroupLayout);
+
 let startTime = Date.now();
 
 // 渲染
 const render = () => {
   const currentTime = (Date.now() - startTime) / 1000.0;
   const timeArray = new Float32Array([currentTime]);
-  device.queue.writeBuffer(timeBuffer, 0, timeArray.buffer);
+  device.queue.writeBuffer(timeBuffer, 0, timeArray);
   // 开始命令编码
   const commandEncoder = device.createCommandEncoder();
 
@@ -185,7 +187,7 @@ let state = EditorState.create({
     EditorState.changeFilter.of((tr) => {
       if (tr.docChanged) {
         const newFragWGSL = tr.newDoc.toString();
-        updatePipeline(newFragWGSL);
+        updatePipeline(newFragWGSL, bindGroupLayout);
       }
       return true;
     }),
