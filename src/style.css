@@ -1,0 +1,37 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  background: #1a1a1a; /* Dark background similar to ShaderToy */
+  color: #fff;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  flex-direction: row; /* Horizontal layout */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+canvas {
+  width: 48vw;
+  height: 48vw;
+  border-right: 1px solid #333; /* subtle border between canvas and editor */
+}
+
+#editor {
+  width: 40vw;
+  height: 100vh;
+  background: #2a2a2a; /* Dark background for the editor */
+  border-left: 1px solid #333; /* subtle border between editor and canvas */
+  overflow: auto; /* In case the content exceeds the editor's height */
+}
