@@ -15,6 +15,7 @@ const context = gpu.context;
 // 表示一个包含四个顶点的正方形的位置信息，每个顶点都由一个二维坐标（x，y）组成
 // prettier-ignore
 const squareVertices = new Float32Array([
+  // vec2 pos, vec2 uv
   -1, -1, 0, 0,
   1, -1, 1, 0,
   -1, 1, 0, 1,
@@ -22,6 +23,8 @@ const squareVertices = new Float32Array([
   1, -1, 1, 0,
   1, 1, 1, 1,
 ]);
+
+const size = [canvas.width, canvas.height];
 
 let pipeline: GPURenderPipeline;
 
