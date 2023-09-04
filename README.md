@@ -11,12 +11,14 @@
 ![Static Badge](https://img.shields.io/badge/typescript-5.0.4-orange)
 
 </div>
-
+<hr/>
 <h3 align="center">
 
 💡 **基本使用** 💡
 
 </h3>
+
+<div align="center">
 
 ### 依赖安装
 
@@ -29,3 +31,31 @@
 ### 效果
 
 [shadertoy](https://fictional-fortnight-546g5jx74x5f459j-5173.app.github.dev/)
+
+</div>
+<hr/>
+<h3 align="center">
+
+💡 **TODO List** 💡
+
+</h3>
+<div align="center">
+
+| 类型       | 功能           | 完成情况 |
+| ---------- | -------------- | -------- |
+| 渲染       | 实时渲染       | ✅       |
+| 参数输入   | 时间           | ✅       |
+| 参数输入   | 画布大小       | ✅       |
+| 参数输入   | 鼠标位置       | ⬜️      |
+| 代码编辑器 | 基本交互       | ✅       |
+| 代码编辑器 | 语法高亮       | ✅       |
+| 代码编辑器 | 语法提示       | ✅       |
+| 代码编辑器 | 异常显示       | ⬜️      |
+| 代码编辑器 | 关键词高亮     | ✅       |
+| 代码编辑器 | 指定行禁用编辑 | ✅       |
+| 代码编辑器 | 字体改变       | ⬜️      |
+| 代码编辑器 | 回车自动缩进   | ✅       |
+| 代码编辑器 | Tab 缩进       | ✅       |
+| 功能       | shader 列表    | ⬜️      |
+
+</div>

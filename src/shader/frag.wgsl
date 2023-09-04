@@ -1,20 +1,11 @@
-// https://www.shadertoy.com/view/mtyGWy
-
-@binding(0) @group(0) var<uniform> iTime: f32;
-
-fn palette(t: f32) -> vec3<f32> {
-    let a = vec3(0.5, 0.5, 0.5);
-    let b = vec3(0.5, 0.5, 0.5);
-    let c = vec3(1.0, 1.0, 1.0);
-    let d = vec3(0.263, 0.416, 0.557);
-    return a + b * cos(6.28318 * (c * t + d));
-}
-
+@group(0) @binding(0) var<uniform> iTime: f32;
+@group(0) @binding(1) var<uniform> size: vec2<f32>;
 @fragment
 fn main(
     @location(0) fragPosition: vec2<f32>,
     @location(1) fragUv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
+    // https://www.shadertoy.com/view/mtyGWy
     var uv = (fragUv - 0.5) * 2.0;
     var uv0 = uv;
     var finalColor = vec3(0.0);
@@ -29,4 +20,12 @@ fn main(
         finalColor += col * d;
     }
     return vec4<f32>(finalColor, 1.0);
+}
+
+fn palette(t: f32) -> vec3<f32> {
+    let a = vec3(0.5, 0.5, 0.5);
+    let b = vec3(0.5, 0.5, 0.5);
+    let c = vec3(1.0, 1.0, 1.0);
+    let d = vec3(0.263, 0.416, 0.557);
+    return a + b * cos(6.28318 * (c * t + d));
 }

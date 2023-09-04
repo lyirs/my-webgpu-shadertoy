@@ -1,16 +1,11 @@
-// https://www.shadertoy.com/view/XsXXDn
-
-@binding(0) @group(0) var<uniform> iTime: f32;
-
-fn modGLSL(a: vec2<f32>, b: f32) -> vec2<f32> {
-    return a - b * floor(a / b);
-}
-
+@group(0) @binding(0) var<uniform> iTime: f32;
+@group(0) @binding(1) var<uniform> size: vec2<f32>;
 @fragment
 fn main(
     @location(0) fragPosition: vec2<f32>,
     @location(1) fragUv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
+    // https://www.shadertoy.com/view/XsXXDn
     var c: vec3<f32>;
     var l: f32;
     var z = iTime;
@@ -27,3 +22,8 @@ fn main(
     }
     return vec4<f32>(c / l, iTime);
 }
+
+fn modGLSL(a: vec2<f32>, b: f32) -> vec2<f32> {
+    return a - b * floor(a / b);
+}
+

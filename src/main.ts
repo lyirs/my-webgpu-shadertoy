@@ -24,7 +24,7 @@ const squareVertices = new Float32Array([
   1, 1, 1, 1,
 ]);
 
-const size = [canvas.width, canvas.height];
+const size = new Float32Array([canvas.width, canvas.height]);
 
 let pipeline: GPURenderPipeline;
 
@@ -91,10 +91,20 @@ const timeBuffer = device.createBuffer({
   usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 
+const sizeBuffer = device.createBuffer({
+  size: 8,
+  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+});
+
 const bindGroupLayout = device.createBindGroupLayout({
   entries: [
     {
       binding: 0,
+      visibility: GPUShaderStage.FRAGMENT,
+      buffer: { type: "uniform" },
+    },
+    {
+      binding: 1,
       visibility: GPUShaderStage.FRAGMENT,
       buffer: { type: "uniform" },
     },
@@ -110,13 +120,20 @@ const bindGroup = device.createBindGroup({
         buffer: timeBuffer,
       },
     },
+    {
+      binding: 1,
+      resource: {
+        buffer: sizeBuffer,
+      },
+    },
   ],
 });
 
 updatePipeline(fragWGSL, bindGroupLayout);
 
-let startTime = Date.now();
+device.queue.writeBuffer(sizeBuffer, 0, size);
 
+let startTime = Date.now();
 // 渲染
 const render = () => {
   const currentTime = (Date.now() - startTime) / 1000.0;
@@ -149,53 +166,53 @@ const render = () => {
 };
 requestAnimationFrame(render);
 
-// 编辑器
+/* =================================================================
+ * 编辑器
+ * =================================================================
+ */
+import { autocompletion } from "@codemirror/autocomplete";
+import { indentWithTab } from "@codemirror/commands";
 import { EditorState } from "@codemirror/state";
-import { basicSetup } from "codemirror";
-import { EditorView } from "@codemirror/view";
+import { KeyBinding, keymap } from "@codemirror/view";
 import { wgsl } from "@iizukak/codemirror-lang-wgsl";
+import { basicSetup, EditorView } from "codemirror";
+import {
+  myTheme,
+  preventEditOnLines,
+  myCompletions,
+  keywordDecorationField,
+  keywordDecorationTheme,
+  decorateKeywords,
+  myIndentation,
+} from "./codemirror";
+import { indentService } from "@codemirror/language";
 
-let myTheme = EditorView.theme({
-  "&": {
-    color: "white",
-    backgroundColor: "#1a1a1a",
+const customTabIndent: KeyBinding = {
+  key: "Tab",
+  run: (view) => {
+    const { from } = view.state.selection.main;
+    const spacesToAdd = 4; // 您希望添加的空格数量
+    const spaces = " ".repeat(spacesToAdd);
+    view.dispatch({
+      changes: { from, to: from, insert: spaces },
+      scrollIntoView: true,
+      selection: { anchor: from + spacesToAdd }, // 更新光标位置
+    });
+    return true;
   },
-  ".cm-gutter": {
-    backgroundColor: "#000",
-  },
-  ".cm-foldGutter": {
-    backgroundColor: "#000",
-  },
-  ".cm-activeLineGutter": {
-    // 当前行 边框
-    backgroundColor: "#fff",
-  },
-  ".ͼd": {
-    // 数字
-    color: "#ff0",
-  },
-  ".ͼb": {
-    // 关键词
-    color: "#1E90FF",
-  },
-  ".ͼk": {
-    // 变量
-    color: "#ADD8FF",
-  },
-});
+};
 
 let state = EditorState.create({
   extensions: [
     basicSetup,
-    EditorState.changeFilter.of((tr) => {
-      if (tr.docChanged) {
-        const newFragWGSL = tr.newDoc.toString();
-        updatePipeline(newFragWGSL, bindGroupLayout);
-      }
-      return true;
-    }),
-    wgsl(),
-    myTheme,
+    wgsl(), // wgsl 语言支持
+    myTheme, // 主题
+    keymap.of([customTabIndent]), // tab 支持
+    preventEditOnLines(updatePipeline, bindGroupLayout, [1, 2, 3, 4, 5, 6, 7]), // 禁止编辑
+    autocompletion({ override: [myCompletions] }), // 自动补全
+    keywordDecorationField, // 关键词状态字段
+    keywordDecorationTheme, // 关键词主题
+    indentService.of(myIndentation),
   ],
   doc: fragWGSL,
 });
@@ -206,5 +223,17 @@ let view = new EditorView({
   parent: document.querySelector("#editor")!,
 });
 
-// let transaction = view.state.update({ changes: { from: 0, insert: "0" } });
-// view.dispatch(transaction);
+// 初始化时调用
+decorateKeywords(view);
+
+const originalWarn = console.warn;
+console.warn = function (message, ...optionalParams) {
+  console.log("s");
+  // 处理或过滤特定的警告
+  if (message.includes("WGSL")) {
+    // 处理WGSL相关的警告
+    console.log("s");
+  }
+  // 调用原始的console.warn
+  originalWarn.apply(console, [message, ...optionalParams]);
+};
