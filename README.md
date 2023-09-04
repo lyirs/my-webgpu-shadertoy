@@ -30,7 +30,7 @@
 
 ### 效果
 
-[shadertoy](https://fictional-fortnight-546g5jx74x5f459j-5173.app.github.dev/)
+[shadertoy](https://lyirs.github.io/my-webgpu-shadertoy/dist/)
 
 </div>
 <hr/>
