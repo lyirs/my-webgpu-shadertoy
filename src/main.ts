@@ -132,6 +132,7 @@ const bindGroup = device.createBindGroup({
 updatePipeline(fragWGSL, bindGroupLayout);
 
 device.queue.writeBuffer(sizeBuffer, 0, size);
+console.log(size);
 
 let startTime = Date.now();
 // 渲染
@@ -166,12 +167,20 @@ const render = () => {
 };
 requestAnimationFrame(render);
 
+window.addEventListener("resize", () => {
+  const canvas = gpu.canvas as HTMLCanvasElement;
+  canvas.width = 640;
+  canvas.height = 360;
+  const size = new Float32Array([canvas.width, canvas.height]);
+  device.queue.writeBuffer(sizeBuffer, 0, size);
+  updatePipeline(fragWGSL, bindGroupLayout);
+});
+
 /* =================================================================
  * 编辑器
  * =================================================================
  */
 import { autocompletion } from "@codemirror/autocomplete";
-import { indentWithTab } from "@codemirror/commands";
 import { EditorState } from "@codemirror/state";
 import { KeyBinding, keymap } from "@codemirror/view";
 import { wgsl } from "@iizukak/codemirror-lang-wgsl";

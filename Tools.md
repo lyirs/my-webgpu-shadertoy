@@ -1,0 +1,6 @@
+- Shadertoy: https://www.shadertoy.com/
+- Inigo Quilez website: https://iquilezles.org/articles/
+- 2D signed distance functions: https://iquilezles.org/articles/distfunctions2d/
+- Color palette article: https://iquilezles.org/articles/palettes/
+- Color palette webapp: http://dev.thi.ng/gradients/
+- Graphtoy: https://graphtoy.com/

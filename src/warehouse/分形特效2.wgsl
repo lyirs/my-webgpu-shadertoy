@@ -9,6 +9,7 @@ fn main(
     const maxIterations = 6.0;
     var circleSize = 1.0 / (3.0 * pow(2.0, maxIterations));
     var uv = fragUv - 0.5;
+    uv.x *= size.x / size.y;
     uv = rot(uv, iTime);
     uv *= sin(iTime) * 0.5 + 1.5;
 

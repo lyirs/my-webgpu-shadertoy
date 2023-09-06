@@ -23,15 +23,15 @@ body {
 }
 
 canvas {
-  width: 48vw;
-  height: 48vw;
+  width: 640px;
+  height: 360px;
   border-right: 1px solid #333; /* subtle border between canvas and editor */
 }
 
 #editor {
-  width: 40vw;
+  width: 64vw;
   height: 100vh;
-  background: #2a2a2a; /* Dark background for the editor */
+  background: #000; /* Dark background for the editor */
   border-left: 1px solid #333; /* subtle border between editor and canvas */
   overflow: auto; /* In case the content exceeds the editor's height */
 }

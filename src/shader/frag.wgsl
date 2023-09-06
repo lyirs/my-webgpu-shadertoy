@@ -5,17 +5,29 @@ fn main(
     @location(0) fragPosition: vec2<f32>,
     @location(1) fragUv: vec2<f32>,
 ) -> @location(0) vec4<f32> {
-    // https://www.shadertoy.com/view/DtXfDr
+    // https://www.shadertoy.com/view/Mss3Wf
+    const maxIterations = 6.0;
+    var circleSize = 1.0 / (3.0 * pow(2.0, maxIterations));
     var uv = fragUv - 0.5;
-    var color = vec4<f32>(0.0);
-    for (var i = 0.0; i <= 5.0; i += 1.0) {
-        let t = i / 5.0;
-        color += line(uv, 1.0 + t, 4.0 + t, vec3<f32>(0.2 + t * 0.7, 0.2 + t * 0.4, 0.3));
+    uv.x *= size.x / size.y;
+    uv = rot(uv, iTime);
+    uv *= sin(iTime) * 0.5 + 1.5;
+
+    var s = 0.3;
+    for (var i = 0.0; i < maxIterations; i += 1.0) {
+        uv = abs(uv) - s;
+        uv = rot(uv, iTime);
+        s = s / 2.1;
     }
-    return color;
+    var c: f32;
+    if length(uv) > circleSize {
+        c = 0.0;
+    } else {
+        c = 1.0;
+    }
+    return vec4<f32>(c, c, c, 1.0);
 }
 
-fn line(uv: vec2<f32>, speed: f32, height: f32, col: vec3<f32>) -> vec4<f32> {
-    let modified_uv = vec2<f32>(uv.x, uv.y + smoothstep(1.0, 0.0, abs(uv.x)) * sin(iTime * speed + uv.x * height) * 0.2);
-    return vec4<f32>(smoothstep(0.06 * smoothstep(0.2, 0.9, abs(modified_uv.x)), 0.0, abs(modified_uv.y) - 0.004) * col, 1.0 * smoothstep(1.0, 0.3, abs(modified_uv.x)));
+fn rot(uv: vec2<f32>, a: f32) -> vec2<f32> {
+    return vec2(uv.x * cos(a) - uv.y * sin(a), uv.y * cos(a) + uv.x * sin(a));
 }

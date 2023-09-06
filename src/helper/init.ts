@@ -7,8 +7,8 @@ export const InitGPU = async () => {
   }
   // 创建canvas
   const canvas = document.querySelector("canvas") as HTMLCanvasElement;
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  canvas.width = 640;
+  canvas.height = 360;
   const context = canvas.getContext("webgpu") as GPUCanvasContext;
   // 请求WebGPU适配器与GPU设备
   const adapter = (await navigator.gpu.requestAdapter()) as GPUAdapter;
