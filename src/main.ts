@@ -12,6 +12,16 @@ const canvas = gpu.canvas;
 const format = gpu.format;
 const context = gpu.context;
 
+import Stats from "stats.js";
+const stats = new Stats();
+stats.showPanel(0);
+stats.dom.style.top = "360px";
+stats.dom.style.right = "0";
+stats.dom.style.left = "560px";
+stats.dom.style.position = "absolute";
+const div = document.querySelector("#left") as HTMLElement;
+div.appendChild(stats.dom);
+
 // 表示一个包含四个顶点的正方形的位置信息，每个顶点都由一个二维坐标（x，y）组成
 // prettier-ignore
 const squareVertices = new Float32Array([
@@ -24,7 +34,7 @@ const squareVertices = new Float32Array([
   1, 1, 1, 1,
 ]);
 
-const size = new Float32Array([canvas.width, canvas.height]);
+const resolution = new Float32Array([canvas.width, canvas.height]);
 
 let pipeline: GPURenderPipeline;
 
@@ -96,6 +106,11 @@ const sizeBuffer = device.createBuffer({
   usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 });
 
+const mouseBuffer = device.createBuffer({
+  size: 16,
+  usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+});
+
 const bindGroupLayout = device.createBindGroupLayout({
   entries: [
     {
@@ -105,6 +120,11 @@ const bindGroupLayout = device.createBindGroupLayout({
     },
     {
       binding: 1,
+      visibility: GPUShaderStage.FRAGMENT,
+      buffer: { type: "uniform" },
+    },
+    {
+      binding: 2,
       visibility: GPUShaderStage.FRAGMENT,
       buffer: { type: "uniform" },
     },
@@ -126,20 +146,47 @@ const bindGroup = device.createBindGroup({
         buffer: sizeBuffer,
       },
     },
+    {
+      binding: 2,
+      resource: {
+        buffer: mouseBuffer,
+      },
+    },
   ],
 });
 
 updatePipeline(fragWGSL, bindGroupLayout);
 
-device.queue.writeBuffer(sizeBuffer, 0, size);
-console.log(size);
+device.queue.writeBuffer(sizeBuffer, 0, resolution);
+
+let mouseX = 0,
+  mouseY = 0,
+  mouseW = 0,
+  mouseZ = 0;
+gpu.canvas.addEventListener("mousemove", (event) => {
+  mouseX = event.clientX;
+  mouseY = event.clientY;
+});
+gpu.canvas.addEventListener("mousedown", (event) => {
+  mouseW = event.clientX;
+  mouseZ = event.clientY;
+});
+
+gpu.canvas.addEventListener("mouseup", () => {
+  mouseW = 0;
+  mouseZ = 0;
+});
 
 let startTime = Date.now();
 // 渲染
 const render = () => {
+  stats.begin();
   const currentTime = (Date.now() - startTime) / 1000.0;
   const timeArray = new Float32Array([currentTime]);
   device.queue.writeBuffer(timeBuffer, 0, timeArray);
+
+  const mouseArray = new Float32Array([mouseX, mouseY, mouseW, mouseZ]);
+  device.queue.writeBuffer(mouseBuffer, 0, mouseArray);
   // 开始命令编码
   const commandEncoder = device.createCommandEncoder();
 
@@ -162,7 +209,7 @@ const render = () => {
   renderPass.end();
   // 提交命令
   device.queue.submit([commandEncoder.finish()]);
-
+  stats.end();
   requestAnimationFrame(render);
 };
 requestAnimationFrame(render);
@@ -181,7 +228,7 @@ window.addEventListener("resize", () => {
  * =================================================================
  */
 import { autocompletion } from "@codemirror/autocomplete";
-import { EditorState } from "@codemirror/state";
+import { EditorState, Line, Transaction } from "@codemirror/state";
 import { KeyBinding, keymap } from "@codemirror/view";
 import { wgsl } from "@iizukak/codemirror-lang-wgsl";
 import { basicSetup, EditorView } from "codemirror";
@@ -193,8 +240,9 @@ import {
   keywordDecorationTheme,
   decorateKeywords,
   myIndentation,
+  myFold,
 } from "./codemirror";
-import { indentService } from "@codemirror/language";
+import { foldEffect, foldService, indentService } from "@codemirror/language";
 
 const customTabIndent: KeyBinding = {
   key: "Tab",
@@ -217,11 +265,16 @@ let state = EditorState.create({
     wgsl(), // wgsl 语言支持
     myTheme, // 主题
     keymap.of([customTabIndent]), // tab 支持
-    preventEditOnLines(updatePipeline, bindGroupLayout, [1, 2, 3, 4, 5, 6, 7]), // 禁止编辑
+    preventEditOnLines(
+      updatePipeline,
+      bindGroupLayout,
+      [1, 2, 3, 4, 5, 6, 7, 8]
+    ), // 禁止编辑
     autocompletion({ override: [myCompletions] }), // 自动补全
     keywordDecorationField, // 关键词状态字段
     keywordDecorationTheme, // 关键词主题
     indentService.of(myIndentation),
+    foldService.of(myFold),
   ],
   doc: fragWGSL,
 });
@@ -235,14 +288,7 @@ let view = new EditorView({
 // 初始化时调用
 decorateKeywords(view);
 
-const originalWarn = console.warn;
-console.warn = function (message, ...optionalParams) {
-  console.log("s");
-  // 处理或过滤特定的警告
-  if (message.includes("WGSL")) {
-    // 处理WGSL相关的警告
-    console.log("s");
-  }
-  // 调用原始的console.warn
-  originalWarn.apply(console, [message, ...optionalParams]);
-};
+const foldTransaction = view.state.update({
+  effects: foldEffect.of({ from: 0, to: view.state.doc.line(3).to }),
+});
+view.dispatch(foldTransaction);

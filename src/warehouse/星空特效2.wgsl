@@ -27,8 +27,8 @@ fn main(
     for (var i = 0.0 ; i < 1.0; i += 1.0 / 4.0) {
         var z = fract(i + t);  // 重用图层
         var size = mix(10.0, 0.05, z);
-        var fade = S(0.0, 0.5, z) * S(1.0, 0.8, z);
-        m += Layer(uv * size + i * 20. - mouse) * fade;  // 淡入淡出
+        var fade = S(0.0, 0.5, z) * S(1.0, 0.8, z); // 淡入淡出
+        m += Layer(uv * size + i * 20. - mouse) * fade;
     }
 
     // 上色

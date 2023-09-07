@@ -21,15 +21,18 @@ export const myTheme = EditorView.theme({
   ".cm-gutter": {
     backgroundColor: "#000",
   },
-  ".cm-foldGutter": {
-    backgroundColor: "#000",
-  },
   ".cm-activeLineGutter": {
     // 当前行 边框
-    backgroundColor: "#fff",
+    backgroundColor: "#4169E1",
+    color: "#fff",
   },
   ".cm-selectionBackground": {
     background: "#808080 !important",
+  },
+  ".cm-foldGutter": {
+    backgroundColor: "#000",
+    width: "15px",
+    color: "#fff",
   },
   ".ͼd": {
     // 数字
@@ -71,6 +74,21 @@ export const myTheme = EditorView.theme({
     color: "#085",
   },
   // ".cm-line:nth-child(2) .ͼk": {
+  //   color: "#FF4500",
+  // },
+  ".cm-line:nth-child(3)": {
+    color: "#F0E68C",
+  },
+  ".cm-line:nth-child(3) .ͼd": {
+    color: "#FF4500",
+  },
+  ".cm-line:nth-child(3) .ͼb": {
+    color: "#FFA500",
+  },
+  ".cm-line:nth-child(3) .ͼi": {
+    color: "#085",
+  },
+  // ".cm-line:nth-child(3) .ͼk": {
   //   color: "#FF4500",
   // },
   ".cm-tooltip-autocomplete": {
@@ -126,6 +144,24 @@ export const myIndentation = (context: IndentContext, pos: number) => {
 
 /*
  * =================================================================
+ * 折叠设置
+ * =================================================================
+ */
+export const myFold = (
+  state: EditorState,
+  lineStart: number,
+  lineEnd: number
+) => {
+  if (lineStart === 0) {
+    // 如果是第一行
+    const endPos = state.doc.line(3).to; // 获取第8行的结束位置
+    return { from: 0, to: endPos }; // 返回折叠的范围
+  }
+  return null; // 对于其他行，不返回折叠范围
+};
+
+/*
+ * =================================================================
  * 自动补全
  * =================================================================
  */
@@ -150,6 +186,8 @@ const completions = [
   { label: "vec3<f32>()", type: "keyword", apply: insertSetting },
   { label: "vec4<f32>()", type: "keyword", apply: insertSetting },
   { label: "iTime", type: "variable" },
+  { label: "iMouse", type: "variable" },
+  { label: "iResolution", type: "variable" },
   { label: "fragPosition", type: "variable" },
   { label: "fragUv", type: "variable" },
   { label: "let", type: "keyword" },
@@ -194,7 +232,8 @@ export const keywordDecorationField = StateField.define<DecorationSet>({
       let effects = [];
       const keywords = [
         { regex: /iTime/g },
-        { regex: /size/g },
+        { regex: /iMouse/g },
+        { regex: /iResolution/g },
         { regex: /@fragment/g },
       ];
       for (const keyword of keywords) {
@@ -243,7 +282,8 @@ export const decorateKeywords = (view: EditorView) => {
   let effects = [];
   const keywords = [
     { regex: /iTime/g },
-    { regex: /size/g },
+    { regex: /iMouse/g },
+    { regex: /iResolution/g },
     { regex: /@fragment/g },
   ];
   for (const keyword of keywords) {

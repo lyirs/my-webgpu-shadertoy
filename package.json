@@ -22,6 +22,8 @@
     "@codemirror/view": "^6.17.0",
     "@iizukak/codemirror-lang-wgsl": "^0.3.0",
     "@lezer/highlight": "^1.1.6",
-    "codemirror": "^6.0.1"
+    "@types/stats.js": "^0.17.0",
+    "codemirror": "^6.0.1",
+    "stats.js": "^0.17.0"
   }
 }
