@@ -80,6 +80,18 @@ const updatePipeline = (fragWGSL: string, bindGroup: GPUBindGroupLayout) => {
       targets: [
         {
           format: format,
+          blend: {
+            color: {
+              srcFactor: "src-alpha",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+            alpha: {
+              srcFactor: "src-alpha",
+              dstFactor: "one-minus-src-alpha",
+              operation: "add",
+            },
+          },
         },
       ],
     },
