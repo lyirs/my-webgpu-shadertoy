@@ -182,6 +182,12 @@ export const insertSetting = (
 };
 
 const completions = [
+  { label: "vec2<f32>", type: "keyword" },
+  { label: "vec3<f32>", type: "keyword" },
+  { label: "vec4<f32>", type: "keyword" },
+  { label: "vec2<u32>", type: "keyword" },
+  { label: "vec3<u32>", type: "keyword" },
+  { label: "vec4<u32>", type: "keyword" },
   { label: "vec2<f32>()", type: "keyword", apply: insertSetting },
   { label: "vec3<f32>()", type: "keyword", apply: insertSetting },
   { label: "vec4<f32>()", type: "keyword", apply: insertSetting },
@@ -193,6 +199,9 @@ const completions = [
   { label: "let", type: "keyword" },
   { label: "var", type: "keyword" },
   { label: "const", type: "keyword" },
+  { label: "f32", type: "keyword" },
+  { label: "i32", type: "keyword" },
+  { label: "u32", type: "keyword" },
 ];
 
 export const myCompletions = (context: {
